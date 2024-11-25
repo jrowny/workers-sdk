@@ -5,7 +5,13 @@ import { DefinitionTreeRoot } from "../core/define-command";
 import { UserError } from "../errors";
 import { CI } from "../is-ci";
 import { logger } from "../logger";
-import { getOS, getWranglerVersion } from "../metrics/helpers";
+import {
+	getNodeVersion,
+	getOS,
+	getOSVersion,
+	getPlatform,
+	getWranglerVersion,
+} from "../metrics/helpers";
 import {
 	getMetricsConfig,
 	readMetricsConfig,
@@ -49,6 +55,9 @@ describe("metrics", () => {
 		beforeEach(() => {
 			vi.mocked(getOS).mockReturnValue("foo:bar");
 			vi.mocked(getWranglerVersion).mockReturnValue("1.2.3");
+			vi.mocked(getOSVersion).mockReturnValue("mock os version");
+			vi.mocked(getNodeVersion).mockReturnValue("1.1.1");
+			vi.mocked(getPlatform).mockReturnValue("mock platform");
 			vi.useFakeTimers({
 				now: new Date(2024, 11, 12),
 			});
@@ -174,7 +183,7 @@ describe("metrics", () => {
 
 		describe("sendNewEvent()", () => {
 			let originalDefinitions: [string, DefinitionTreeNode][];
-
+			// const commonProperties =
 			beforeAll(() => {
 				originalDefinitions = [...DefinitionTreeRoot.subtree.entries()];
 				// register a no-op test command
@@ -230,6 +239,24 @@ describe("metrics", () => {
 				// clean up the command definitions
 				DefinitionTreeRoot.subtree = new Map(originalDefinitions);
 			});
+			const reusedProperties = {
+				wranglerVersion: "1.2.3",
+				osPlatform: "mock platform",
+				osVersion: "mock os version",
+				nodeVersion: "1.1.1",
+				isFirstUsage: false,
+				isCI: false,
+				isInteractive: true,
+			};
+			const reusedGlobalArgs = {
+				"experimental-versions": true,
+				"x-versions": true,
+				"experimental-gradual-rollouts": true,
+				xVersions: true,
+				experimentalGradualRollouts: true,
+				experimentalVersions: true,
+			};
+
 			it("should send a started and completed event", async () => {
 				const requests = mockMetricRequest();
 
@@ -244,10 +271,7 @@ describe("metrics", () => {
 					properties: {
 						amplitude_session_id: 1733961600000,
 						amplitude_event_id: 0,
-						wranglerVersion: "1.2.3",
-						isFirstUsage: false,
-						isCI: false,
-						isInteractive: true,
+						...reusedProperties,
 						argsUsed: [
 							"array",
 							"number",
@@ -259,12 +283,7 @@ describe("metrics", () => {
 							"array, number, positional, xgradualrollouts, xversions",
 						command: "wrangler command subcommand",
 						args: {
-							"experimental-versions": true,
-							"x-versions": true,
-							"experimental-gradual-rollouts": true,
-							xVersions: true,
-							experimentalGradualRollouts: true,
-							experimentalVersions: true,
+							...reusedGlobalArgs,
 							default: false,
 							array: ["<REDACTED>", "<REDACTED>"],
 							number: 42,
@@ -282,10 +301,7 @@ describe("metrics", () => {
 					properties: {
 						amplitude_session_id: 1733961600000,
 						amplitude_event_id: 1,
-						wranglerVersion: "1.2.3",
-						isFirstUsage: false,
-						isCI: false,
-						isInteractive: true,
+						...reusedProperties,
 						argsUsed: [
 							"array",
 							"number",
@@ -297,12 +313,7 @@ describe("metrics", () => {
 							"array, number, positional, xgradualrollouts, xversions",
 						command: "wrangler command subcommand",
 						args: {
-							"experimental-versions": true,
-							"x-versions": true,
-							"experimental-gradual-rollouts": true,
-							xVersions: true,
-							experimentalGradualRollouts: true,
-							experimentalVersions: true,
+							...reusedGlobalArgs,
 							default: false,
 							array: ["<REDACTED>", "<REDACTED>"],
 							number: 42,
@@ -342,10 +353,7 @@ describe("metrics", () => {
 					properties: {
 						amplitude_session_id: 1733961600000,
 						amplitude_event_id: 0,
-						wranglerVersion: "1.2.3",
-						isFirstUsage: false,
-						isCI: false,
-						isInteractive: true,
+						...reusedProperties,
 						argsUsed: [
 							"array",
 							"number",
@@ -357,12 +365,7 @@ describe("metrics", () => {
 							"array, number, positional, xgradualrollouts, xversions",
 						command: "wrangler command subcommand",
 						args: {
-							"experimental-versions": true,
-							"x-versions": true,
-							"experimental-gradual-rollouts": true,
-							xVersions: true,
-							experimentalGradualRollouts: true,
-							experimentalVersions: true,
+							...reusedGlobalArgs,
 							default: false,
 							array: ["<REDACTED>", "<REDACTED>"],
 							number: 42,
@@ -381,10 +384,7 @@ describe("metrics", () => {
 					properties: {
 						amplitude_session_id: 1733961600000,
 						amplitude_event_id: 1,
-						wranglerVersion: "1.2.3",
-						isFirstUsage: false,
-						isCI: false,
-						isInteractive: true,
+						...reusedProperties,
 						argsUsed: [
 							"array",
 							"number",
@@ -396,12 +396,7 @@ describe("metrics", () => {
 							"array, number, positional, xgradualrollouts, xversions",
 						command: "wrangler command subcommand",
 						args: {
-							"experimental-versions": true,
-							"x-versions": true,
-							"experimental-gradual-rollouts": true,
-							xVersions: true,
-							experimentalGradualRollouts: true,
-							experimentalVersions: true,
+							...reusedGlobalArgs,
 							default: false,
 							array: ["<REDACTED>", "<REDACTED>"],
 							number: 42,

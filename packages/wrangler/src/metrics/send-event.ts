@@ -127,11 +127,13 @@ export type CommonEventProperties = {
 	/**
 	 * The platform that the wrangler client is running on.
 	 */
-	platform: string;
+	osPlatform: string;
+	osVersion: string;
 	/**
 	 * The package manager that the wrangler client is using.
 	 */
 	packageManager: string | undefined;
+	nodeVersion: string;
 	/**
 	 * Whether this is the first time the user has used the wrangler client.
 	 */
@@ -139,10 +141,16 @@ export type CommonEventProperties = {
 
 	amplitude_session_id: number;
 	amplitude_event_id: number;
-
 	isCI: boolean;
 	isInteractive: boolean;
+	/**
+	 * A list of normalised argument names/flags that were passed in or are set by default.
+	 * Excludes boolean flags set to false.
+	 */
 	argsUsed: string[];
+	/**
+	 * Same as argsUsed except concatenated for convenience in Amplitude
+	 */
 	argsCombination: string;
 };
 

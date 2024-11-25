@@ -1,3 +1,4 @@
+import os from "node:os";
 import whichPmRuns from "which-pm-runs";
 import { version as wranglerVersion } from "../../package.json";
 
@@ -9,8 +10,9 @@ export function getPackageManager() {
 	return whichPmRuns()?.name;
 }
 
+// used by "new" metrics
 export function getPlatform() {
-	const platform = process.platform;
+	const platform = os.platform();
 
 	switch (platform) {
 		case "win32":
@@ -24,6 +26,15 @@ export function getPlatform() {
 	}
 }
 
+// used by "old" metrics
 export function getOS() {
 	return process.platform + ":" + process.arch;
+}
+
+export function getOSVersion() {
+	return os.version();
+}
+
+export function getNodeVersion() {
+	return process.version;
 }

@@ -4,7 +4,9 @@ import _isInteractive from "../is-interactive";
 import { logger } from "../logger";
 import { CI } from "./../is-ci";
 import {
+	getNodeVersion,
 	getOS,
+	getOSVersion,
 	getPackageManager,
 	getPlatform,
 	getWranglerVersion,
@@ -25,7 +27,9 @@ export function getMetricsDispatcher(options: MetricsConfigOptions) {
 	const SPARROW_SOURCE_KEY = process.env.SPARROW_SOURCE_KEY ?? "";
 	const requests: Array<Promise<void>> = [];
 	const wranglerVersion = getWranglerVersion();
-	const platform = getPlatform();
+	const osPlatform = getPlatform();
+	const osVersion = getOSVersion();
+	const nodeVersion = getNodeVersion();
 	const packageManager = getPackageManager();
 	const isFirstUsage = readMetricsConfig().permission === undefined;
 	const isCI = CI.isCI();
@@ -86,7 +90,9 @@ export function getMetricsDispatcher(options: MetricsConfigOptions) {
 				amplitude_session_id,
 				amplitude_event_id: amplitude_event_id++,
 				wranglerVersion,
-				platform,
+				osPlatform,
+				osVersion,
+				nodeVersion,
 				packageManager,
 				isFirstUsage,
 				isCI,
