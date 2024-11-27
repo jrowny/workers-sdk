@@ -258,8 +258,9 @@ async function pushStackedStorage(intoDepth: number, persistPath: string) {
 			}
 			const namePath = path.join(keyPath, name);
 			const stackFrameNamePath = path.join(stackFrameKeyPath, name);
-			assert(name.endsWith(".sqlite"), `Expected .sqlite, got ${namePath}`);
-			await fs.copyFile(namePath, stackFrameNamePath);
+			if(name.endsWith(".sqlite")) {
+				await fs.copyFile(namePath, stackFrameNamePath);
+			}
 		}
 	}
 }
@@ -277,7 +278,7 @@ async function popStackedStorage(fromDepth: number, persistPath: string) {
 				break;
 			}
 			const namePath = path.join(keyPath, name);
-			assert(name.endsWith(".sqlite"), `Expected .sqlite, got ${namePath}`);
+			assert(name.includes(".sqlite"), `Expected .sqlite, got ${namePath}`);
 			await fs.unlink(namePath);
 		}
 	}
